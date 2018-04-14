@@ -12,9 +12,9 @@
   (let [port (Integer/parseInt (or (env :port) "3000"))]
     (reset! server (run-jetty #'handler {:port port :join? false}))))
 
- (defn stop-server
-   []
-   (.stop @server))
+(defn stop-server
+  []
+  (.stop @server))
 
- (defn -main [& args]
-   (start-server))
+(defn -main [& args]
+  (start-server))

@@ -19,10 +19,12 @@
 (re-frame/reg-event-fx
   ::api/roll-die
   (fn [{:keys [db] :as cofx}
-       [_ id sides]]
+       [_ id sides modifier]]
     {:db (assoc-in db [::api/roll-die-results id] 0)
-     :http-xhrio {:method          :get
-                  :uri             (str "http://localhost:3000/roll-die/" sides)
+     :http-xhrio {:method          :post
+                  :uri             (str "http://localhost:3000/roll-die")
+                  :params          {:sides sides
+                                    :modifier modifier}
                   :format          (ajax/json-request-format)
                   :response-format (ajax/json-response-format {:keywords? true})
                   :on-success      [::api/roll-die-success id]

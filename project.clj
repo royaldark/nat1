@@ -15,7 +15,8 @@
                  [ring/ring-json "0.5.0-beta1"]]
 
   :plugins [[lein-cljsbuild "1.1.5"]
-            [lein-less "1.7.5"]]
+            [lein-less "1.7.5"]
+            [lein-cljfmt "0.5.7"]]
 
   :min-lein-version "2.5.3"
 

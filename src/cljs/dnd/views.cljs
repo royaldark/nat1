@@ -16,31 +16,33 @@
      :class "site-header"]))
 
 (defn roller []
-  (let [id     (random-uuid)
-        sides  (reagent/atom "20")
-        result (re-frame/subscribe [::subs/die-roll id])]
+  (let [id       (random-uuid)
+        sides    (reagent/atom "20")
+        modifier (reagent/atom "0")
+        result   (re-frame/subscribe [::subs/die-roll id])]
     (fn []
       [re-com/h-box
        :children [[re-com/input-text
+                   :width "3.5rem"
                    :model sides
                    :on-change #(reset! sides %)]
+                  "+"
+                  [re-com/input-text
+                   :width "3.5rem"
+                   :model modifier
+                   :on-change #(reset! modifier %)]
+                  "="
+                  (or @result "__")
                   [re-com/button
                    :label "Roll"
-                   :on-click #(re-frame/dispatch [::api/roll-die id @sides]) ]
-                  (str "Result: " @result)]])))
-
-(defn link-to-about-page []
-  [re-com/hyperlink-href
-   :label "go to About Page"
-   :href "#/about"])
+                   :on-click #(re-frame/dispatch [::api/roll-die id @sides @modifier])]]])))
 
 (defn home-panel []
   [re-com/v-box
    :gap "1em"
    :children [[header]
               [roller]
-              [roller]
-              [link-to-about-page]]])
+              [roller]]])
 
 
 ;; about
