@@ -6,11 +6,11 @@
 			<attribute name="optional" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="src" path="test">
-		<attributes>
-			<attribute name="optional" value="true"/>
-		</attributes>
-	</classpathentry>
+	<classpathentry kind="src" path="test/clj"/>
+	<classpathentry kind="src" path="test/cljc"/>
+	<classpathentry kind="src" path="test/cljs"/>
+	<classpathentry kind="src" path="src/cljc"/>
+	<classpathentry kind="src" path="src/cljs"/>
 	<classpathentry kind="src" path="dev-resources">
 		<attributes>
 			<attribute name="optional" value="true"/>

@@ -12,15 +12,18 @@
                  [yogthos/config "0.8"]
                  [javax.servlet/servlet-api "2.5"]
                  [ring "1.6.3"]
-                 [ring-cors "0.1.12"]]
+                 [ring-cors "0.1.12"]
+                 [org.apache.commons/commons-math3 "3.6"]]
 
   :plugins [[lein-cljsbuild "1.1.5"]
             [lein-less "1.7.5"]
             [lein-cljfmt "0.5.7"]]
+  
+  :cljfmt {:file-pattern #"\.clj[sxc]?$"}
 
   :min-lein-version "2.5.3"
 
-  :source-paths ["src/clj"]
+  :source-paths ["src/clj" "src/cljc"]
 
   :clean-targets ^{:protect false} ["resources/public/js/compiled" "target"
                                     "test/js"]
@@ -44,7 +47,7 @@
   :cljsbuild
   {:builds
    [{:id           "dev"
-     :source-paths ["src/cljs"]
+     :source-paths ["src/cljs" "src/cljc"]
      :figwheel     {:on-jsload "dnd.core/mount-root"}
      :compiler     {:main                 dnd.core
                     :output-to            "resources/public/js/compiled/app.js"
@@ -59,7 +62,7 @@
                     }}
 
     {:id           "min"
-     :source-paths ["src/cljs"]
+     :source-paths ["src/cljs" "src/cljc"]
      :jar true
      :compiler     {:main            dnd.core
                     :output-to       "resources/public/js/compiled/app.js"
@@ -68,7 +71,7 @@
                     :pretty-print    false}}
 
     {:id           "test"
-     :source-paths ["src/cljs" "test/cljs"]
+     :source-paths ["src/cljs" "src/cljc" "test/cljs" "test/cljc"]
      :compiler     {:main          dnd.runner
                     :output-to     "resources/public/js/compiled/test.js"
                     :output-dir    "resources/public/js/compiled/test/out"
