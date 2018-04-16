@@ -1,5 +1,5 @@
 body {
-    color:red;
+    color: black;
 }
 
 .site-header {
@@ -8,8 +8,21 @@ body {
     padding: 1rem;
 }
 
+@input-color-base: lighten(black, 70%);
+@input-color-focus: blue;
+@input-color-hover: black;
+
 .form-control {
     border: none;
     border-radius: 0;
-    box-shadow: 0 2px 0 0 blue;
+    box-shadow: 0 2px 0 0 @input-color-base;
+    height: auto;
+    
+    &:focus {
+        box-shadow: 0 2px 0 0 @input-color-focus;
+    }
+
+    &:hover {
+        box-shadow: 0 2px 0 0 @input-color-hover;
+    }
 }

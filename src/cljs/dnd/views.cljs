@@ -57,11 +57,14 @@
                    :style text-style]
                   "="
                   [re-com/box
-                   :child (if-let [num @result]
-                            (str num)
-                            "\u00A0")
+                   :child [:div
+                           {:style {:width "100%"}}
+                           (if-let [num @result]
+                             (str num)
+                             "\u00A0")]
                    :style {:box-shadow "0 2px 0 0 blue"
-                           :min-width "2rem"}]
+                           :min-width "2rem"
+                           :text-align "center"}]
                   [re-com/button
                    :label "Roll"
                    :on-click #(re-frame/dispatch [::api/roll-die id
