@@ -1,4 +1,5 @@
 (ns dnd.views
+  (:require-macros [re-com.core :refer [handler-fn]])
   (:require [reagent.core :as reagent]
             [re-frame.core :as re-frame]
             [re-com.core :as re-com]
@@ -17,25 +18,43 @@
 
 (defn roller []
   (let [id       (random-uuid)
+        number   (reagent/atom "1")
         sides    (reagent/atom "20")
         modifier (reagent/atom "0")
-        result   (re-frame/subscribe [::subs/die-roll id])]
+        digit-re #"^[0-9]+$"
+        result   (re-frame/subscribe [::subs/die-roll id])
+        select-all (handler-fn
+                     (.select (.-target event)))]
     (fn []
       [re-com/h-box
        :children [[re-com/input-text
+                   :width "2.5rem"
+                   :model number
+                   :validation-regex digit-re
+                   :on-change #(reset! number %)
+                   :attr {:on-focus select-all}]
+                  "d"
+                  [re-com/input-text
                    :width "3.5rem"
                    :model sides
-                   :on-change #(reset! sides %)]
+                   :validation-regex digit-re
+                   :on-change #(reset! sides %)
+                   :attr {:on-focus select-all}]
                   "+"
                   [re-com/input-text
                    :width "3.5rem"
                    :model modifier
-                   :on-change #(reset! modifier %)]
+                   :validation-regex digit-re
+                   :on-change #(reset! modifier %)
+                   :attr {:on-focus select-all}]
                   "="
                   (or @result "__")
                   [re-com/button
                    :label "Roll"
-                   :on-click #(re-frame/dispatch [::api/roll-die id @sides @modifier])]]])))
+                   :on-click #(re-frame/dispatch [::api/roll-die id
+                                                  (js/parseInt @number)
+                                                  (js/parseInt @sides)
+                                                  (js/parseInt @modifier)])]]])))
 
 (defn home-panel []
   [re-com/v-box
