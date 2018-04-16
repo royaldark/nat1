@@ -59,7 +59,7 @@
                   [re-com/box
                    :child [:div
                            {:style {:width "100%"}}
-                           (if-let [num @result]
+                           (if-let [num (:result @result)]
                              (str num)
                              "\u00A0")]
                    :style {:box-shadow "0 2px 0 0 blue"

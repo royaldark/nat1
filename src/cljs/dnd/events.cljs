@@ -34,7 +34,7 @@
 (re-frame/reg-event-db
   ::api/roll-die-success
   (fn [db [_ id result]]
-    (assoc-in db [::api/roll-die-results id] (:roll result))))
+    (assoc-in db [::api/roll-die-results id] result)))
 
 (re-frame/reg-event-db
   ::api/roll-die-failure

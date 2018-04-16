@@ -10,6 +10,7 @@
      :body-params [{number   :- s/Int 1}
                    sides     :- s/Int
                    {modifier :- s/Int 0}]
-     :return {:roll s/Int}
+     :return {:result s/Int
+              :rolls [s/Int]}
      (println (format "Rolling %sd%s+%s" number sides modifier))
-     (resp/response {:roll (dice/roll number sides modifier)}))))
+     (resp/response (dice/roll number sides modifier)))))
