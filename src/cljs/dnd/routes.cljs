@@ -1,30 +1,22 @@
 (ns dnd.routes
   (:require-macros [secretary.core :refer [defroute]])
-  (:import goog.Uri
-           goog.history.Html5History)
-  (:require [secretary.core :as secretary]
+  (:require [accountant.core :as accountant]
+            [dnd.events :as events]
             [goog.events :as gevents]
             [goog.history.EventType :as EventType]
             [re-frame.core :as re-frame]
-            [dnd.events :as events]))
+            [secretary.core :as secretary])
+  (:import goog.Uri
+           goog.history.Html5History))
 
 (defn hook-browser-navigation! []
-  (let [history (doto (Html5History.)
-                  (gevents/listen
-                   EventType/NAVIGATE
-                   (fn [event]
-                     (secretary/dispatch! (.-token event))))
-                  (.setEnabled true)
-                  (.setPathPrefix "")
-                  (.setUseFragment false))]
-  
-    (gevents/listen js/document "click"
-                    (fn [e]
-                      (let [path  (.getPath (.parse Uri (.-href (.-target e))))
-                            title (.-title (.-target e))]
-                        (when (not-empty path)
-                          (. e preventDefault)
-                          (. history (setToken path title))))))))
+  (accountant/configure-navigation!
+   {:nav-handler (fn [path]
+                   (println "nav handler:" path)
+                   (secretary/dispatch! path))
+    :path-exists? (fn [path]
+                    (println "path exists?" path)
+                    (secretary/locate-route path))}))
 
 (defn app-routes []
   (defroute "/" []
@@ -33,5 +25,12 @@
   (defroute "/login" []
     (re-frame/dispatch [::events/set-active-panel :login-panel]))
 
+  (defroute "/signup" []
+    (re-frame/dispatch [::events/set-active-panel :signup-panel]))
+
+  (println "hooking browser nav")
+
   ;; --------------------
-  (hook-browser-navigation!))
+  (hook-browser-navigation!)
+
+  (accountant/dispatch-current!))

@@ -15,6 +15,8 @@ body {
 @input-color-base: lighten(black, 70%);
 @input-color-focus: blue;
 @input-color-hover: black;
+@input-color-invalid: red;
+@input-color-valid: green;
 
 .form-control {
     border: none;
@@ -28,5 +30,13 @@ body {
 
     &:hover {
         box-shadow: 0 2px 0 0 @input-color-hover;
+    }
+    
+    &.valid {
+        box-shadow: 0 2px 0 0 @input-color-valid;
+    }
+
+    &.invalid {
+        box-shadow: 0 2px 0 0 @input-color-invalid;
     }
 }

@@ -13,12 +13,13 @@
                  [javax.servlet/servlet-api "2.5"]
                  [ring "1.6.3"]
                  [ring-cors "0.1.12"]
-                 [org.apache.commons/commons-math3 "3.6"]]
+                 [org.apache.commons/commons-math3 "3.6"]
+                 [venantius/accountant "0.2.4"]]
 
   :plugins [[lein-cljsbuild "1.1.5"]
             [lein-less "1.7.5"]
             [lein-cljfmt "0.5.7"]]
-  
+
   :cljfmt {:file-pattern #"\.clj[sxc]?$"}
 
   :min-lein-version "2.5.3"
@@ -42,7 +43,7 @@
 
     :plugins      [[lein-figwheel "0.5.13"]
                    [lein-doo "0.1.8"]]}
-   :prod { :dependencies [[day8.re-frame/tracing-stubs "0.5.0"]]}}
+   :prod {:dependencies [[day8.re-frame/tracing-stubs "0.5.0"]]}}
 
   :cljsbuild
   {:builds
@@ -58,8 +59,7 @@
                                            day8.re-frame-10x.preload]
                     :closure-defines      {"re_frame.trace.trace_enabled_QMARK_" true
                                            "day8.re_frame.tracing.trace_enabled_QMARK_" true}
-                    :external-config      {:devtools/config {:features-to-install :all}}
-                    }}
+                    :external-config      {:devtools/config {:features-to-install :all}}}}
 
     {:id           "min"
      :source-paths ["src/cljs" "src/cljc"]
@@ -75,8 +75,7 @@
      :compiler     {:main          dnd.runner
                     :output-to     "resources/public/js/compiled/test.js"
                     :output-dir    "resources/public/js/compiled/test/out"
-                    :optimizations :none}}
-    ]}
+                    :optimizations :none}}]}
 
   :main dnd.server
 
@@ -84,5 +83,4 @@
 
   :uberjar-name "dnd.jar"
 
-  :prep-tasks [["cljsbuild" "once" "min"]["less" "once"] "compile"]
-  )
+  :prep-tasks [["cljsbuild" "once" "min"] ["less" "once"] "compile"])

@@ -9,36 +9,67 @@
 (re-frame/reg-event-db
  ::initialize-db
  (fn-traced [_ _]
-   db/default-db))
+            db/default-db))
 
 (re-frame/reg-event-db
  ::set-active-panel
  (fn-traced [db [_ active-panel]]
-   (assoc db :active-panel active-panel)))
+            (assoc db :active-panel active-panel)))
+
+;; api/roll-die
 
 (re-frame/reg-event-fx
-  ::api/roll-die
-  (fn [{:keys [db] :as cofx}
-       [_ id number sides modifier]]
-    {:db (assoc-in db [::api/roll-die-results id] 0)
-     :http-xhrio {:method          :post
-                  :uri             "http://localhost:3000/roll"
-                  :params          {:number   number
-                                    :sides    sides
-                                    :modifier modifier}
-                  :format          (ajax/json-request-format)
-                  :response-format (ajax/json-response-format {:keywords? true})
-                  :on-success      [::api/roll-die-success id]
-                  :on-failure      [::api/roll-die-failure id]}}))
+ ::api/roll-die
+ (fn [{:keys [db] :as cofx}
+      [_ id number sides modifier]]
+   {:db (assoc-in db [::api/roll-die-results id] 0)
+    :http-xhrio {:method          :post
+                 :uri             "http://localhost:3000/roll"
+                 :params          {:number   number
+                                   :sides    sides
+                                   :modifier modifier}
+                 :format          (ajax/json-request-format)
+                 :response-format (ajax/json-response-format {:keywords? true})
+                 :on-success      [::api/roll-die-success id]
+                 :on-failure      [::api/roll-die-failure id]}}))
 
 (re-frame/reg-event-db
-  ::api/roll-die-success
-  (fn [db [_ id result]]
-    (assoc-in db [::api/roll-die-results id] result)))
+ ::api/roll-die-success
+ (fn [db [_ id result]]
+   (assoc-in db [::api/roll-die-results id] result)))
 
 (re-frame/reg-event-db
-  ::api/roll-die-failure
-  (fn [db [_ id result]]
-    (println result)
-    #_(assoc db :api-result result)
-    db))
+ ::api/roll-die-failure
+ (fn [db [_ id result]]
+   (println result)
+   #_(assoc db :api-result result)
+   db))
+
+;; api/sign-up
+
+(re-frame/reg-event-fx
+ ::api/sign-up
+ (fn [{:keys [db] :as cofx}
+      [_ username email password]]
+   {#_#_:db (assoc db :signup-result)
+    :http-xhrio {:method          :post
+                 :uri             "http://localhost:3000/signup"
+                 :params          {:username username
+                                   :email    email
+                                   :password password}
+                 :format          (ajax/json-request-format)
+                 :response-format (ajax/json-response-format {:keywords? true})
+                 :on-success      [::api/sign-up-success]
+                 :on-failure      [::api/sign-up-failure]}}))
+
+(re-frame/reg-event-db
+ ::api/sign-up-success
+ (fn [db [_ result]]
+   (assoc db ::api/sign-up-results result)))
+
+(re-frame/reg-event-db
+ ::api/sign-up-failure
+ (fn [db [_ result]]
+   (println result)
+   #_(assoc db :api-result result)
+   db))
