@@ -14,7 +14,9 @@
                  [ring "1.6.3"]
                  [ring-cors "0.1.12"]
                  [org.apache.commons/commons-math3 "3.6"]
-                 [venantius/accountant "0.2.4"]]
+                 [venantius/accountant "0.2.4"]
+                 [codax "1.2.0"]
+                 [mount "0.1.12"]]
 
   :plugins [[lein-cljsbuild "1.1.5"]
             [lein-less "1.7.5"]

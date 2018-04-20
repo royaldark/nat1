@@ -1,20 +1,20 @@
 (ns dnd.server
-  (:require [dnd.handler :refer [handler]]
-            [config.core :refer [env]]
-            [ring.adapter.jetty :refer [run-jetty]])
-  (:gen-class))
+  (:gen-class)
+  (:require
+    ;; Initialization Dependencies
+   [mount.core :as mount]
 
-(defonce server
-  (atom nil))
+    ;; Mount States
+   dnd.states.db
+   dnd.states.http-server))
 
 (defn start-server
   []
-  (let [port (Integer/parseInt (or (env :port) "3000"))]
-    (reset! server (run-jetty #'handler {:port port :join? false}))))
+  (mount/start))
 
 (defn stop-server
   []
-  (.stop @server))
+  (mount/stop))
 
 (defn -main [& args]
   (start-server))
