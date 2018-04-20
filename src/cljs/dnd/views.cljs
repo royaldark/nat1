@@ -12,7 +12,12 @@
 (defn header []
   (let [version (re-frame/subscribe [::subs/version])]
     [re-com/h-box
-     :children [(str "nat 1 v" @version)]
+     :children [[re-com/box
+                 :child (str "nat1 v" @version)
+                 :size "auto"]
+                [re-com/hyperlink-href
+                 :label "Log In"
+                 :href "/login"]]
      :width "100%"
      :class "site-header"]))
 
@@ -87,24 +92,42 @@
   [re-com/title
    :label "This is the About Page."
    :level :level1])
+ 
+(defn login-form []
+  (let [username (reagent/atom "joe")
+        password (reagent/atom "")]
+    (fn []
+      [re-com/v-box
+       :children ["Username:"
+                  [re-com/input-text
+                   :model username
+                   :on-change #(reset! username %)]
+                  "Password:"
+                  [re-com/input-text
+                   :input-type :password
+                   :model password
+                   :on-change #(reset! password %)]
+                  [re-com/button
+                   :label "Login"
+                   :on-click #(do nil)]]])))
 
-(defn link-to-home-page []
-  [re-com/hyperlink-href
-   :label "go to Home Page"
-   :href "#/"])
-
-(defn about-panel []
+(defn login-panel []
   [re-com/v-box
    :gap "1em"
-   :children [[about-title] [link-to-home-page]]])
-
+   :children [[re-com/title
+               :label "Login"
+               :level :level1]
+              [login-form]
+              [re-com/hyperlink-href
+                 :label "Home"
+                 :href "/"]]])
 
 ;; main
 
  (defn- panels [panel-name]
   (case panel-name
     :home-panel [home-panel]
-    :about-panel [about-panel]
+    :login-panel [login-panel]
     [:div]))
 
 (defn show-panel [panel-name]
@@ -114,4 +137,6 @@
   (let [active-panel (re-frame/subscribe [::subs/active-panel])]
     [re-com/v-box
      :height "100%"
+     :width "100%"
+     :justify :center
      :children [[panels @active-panel]]]))
