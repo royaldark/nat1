@@ -17,7 +17,8 @@
                  [venantius/accountant "0.2.4"]
                  [codax "1.2.0"]
                  [mount "0.1.12"]
-                 [commons-validator "1.6"]]
+                 [commons-validator "1.6"]
+                 [buddy "2.0.0"]]
 
   :plugins [[lein-cljsbuild "1.1.5"]
             [lein-less "1.7.5"]
