@@ -1,10 +1,12 @@
 (ns dnd.handler
-  (:require [compojure.api.coercion.schema :as schema-coercion]
+  (:require #_[compojure.api.coercion.schema :as schema-coercion]
             [compojure.api.sweet :as capi :refer [GET]]
             [compojure.core]
             [compojure.route :refer [resources]]
             [dnd.api :as api]
             [dnd.routes.roll :as roll]
+            [dnd.routes.signup :as signup]
+            [dnd.testing.coercion :as s-coercion]
             [ring.middleware.cors :as cors]
             [ring.middleware.reload :as reload]
             [ring.util.response :as resp]
@@ -23,11 +25,12 @@
 
 (def routes
   (capi/api
-   {:coercion (schema-coercion/create-coercion
-               (assoc-in
-                schema-coercion/default-options
-                [:response :default]
-                schema-coercion/json-coercion-matcher))
+   {:coercion (s-coercion/create-coercion
+               (-> s-coercion/default-options
+                   (assoc-in [:response :default]
+                             s-coercion/json-coercion-matcher)
+                   (assoc-in [:body :default]
+                             s-coercion/json-coercion-matcher)))
     :exceptions  {:handlers
                   {::api/http-error render-http-error}}
     :swagger {:ui "/api-docs"
@@ -38,6 +41,7 @@
    (GET "/" [] (resp/resource-response "index.html" {:root "public"}))
 
    (capi/context "/roll" [] #'roll/routes)
+   (capi/context "/signup" [] #'signup/routes)
 
    (resources "/")))
 

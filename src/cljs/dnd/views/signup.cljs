@@ -1,18 +1,15 @@
 (ns dnd.views.signup
   (:require [dnd.api :as api]
+            [dnd.domain.user :as user]
             [dnd.util :as util]
             [dnd.views.header :as v-header]
             [reagent.core :as reagent]
             [re-com.core :as re-com]
             [re-frame.core :as re-frame]))
 
-;; Taken from https://github.com/reagent-project/reagent-utils/blob/93668d46134c1e4697b0c097dcf0faccd6722900/src/reagent/validation.cljs#L46
-(def email-regex
-  #"(?i)[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?")
-
 (defn handle-email-change
   [atom valid-atom new-val]
-  (reset! valid-atom (if (re-matches email-regex new-val)
+  (reset! valid-atom (if (user/valid-email? new-val)
                        ::valid
                        ::invalid))
   (reset! atom new-val))
