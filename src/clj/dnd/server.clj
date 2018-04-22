@@ -6,7 +6,8 @@
 
     ;; Mount States
    dnd.states.db
-   dnd.states.http-server))
+   dnd.states.http-server
+   dnd.states.jwt))
 
 (defn start-server
   []

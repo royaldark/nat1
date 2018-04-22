@@ -2,6 +2,7 @@
   (:require [config.core :as conf]
             [dnd.handler :refer [handler]]
             [dnd.states.db :refer [db]]
+            [dnd.states.jwt :refer [jwt-secret]]
             [mount.core :as mount]
             [ring.adapter.jetty :refer [run-jetty]])
   (:import (org.eclipse.jetty.server Server)))

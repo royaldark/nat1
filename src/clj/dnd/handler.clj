@@ -1,12 +1,14 @@
 (ns dnd.handler
-  (:require #_[compojure.api.coercion.schema :as schema-coercion]
+  (:require [compojure.api.coercion.schema :as schema-coercion]
+            [buddy.auth.backends :as backends]
+            [buddy.auth.middleware :as buddy]
             [compojure.api.sweet :as capi :refer [GET]]
             [compojure.core]
             [compojure.route :refer [resources]]
             [dnd.api :as api]
+            [dnd.states.jwt :refer [jwt-backend]]
             [dnd.routes.roll :as roll]
             [dnd.routes.signup :as signup]
-            [dnd.testing.coercion :as s-coercion]
             [ring.middleware.cors :as cors]
             [ring.middleware.reload :as reload]
             [ring.util.response :as resp]
@@ -25,12 +27,12 @@
 
 (def routes
   (capi/api
-   {:coercion (s-coercion/create-coercion
-               (-> s-coercion/default-options
+   {:coercion (schema-coercion/create-coercion
+               (-> schema-coercion/default-options
                    (assoc-in [:response :default]
-                             s-coercion/json-coercion-matcher)
+                             schema-coercion/json-coercion-matcher)
                    (assoc-in [:body :default]
-                             s-coercion/json-coercion-matcher)))
+                             schema-coercion/json-coercion-matcher)))
     :exceptions  {:handlers
                   {::api/http-error render-http-error}}
     :swagger {:ui "/api-docs"
@@ -60,5 +62,6 @@
 (def handler
   (-> #'routes
       wrap-debug-info
+      (buddy/wrap-authentication jwt-backend)
       (cors/wrap-cors :access-control-allow-origin  [#".*"]
                       :access-control-allow-methods [:get :put :post :delete])))
