@@ -28,8 +28,6 @@
 (defrecord JwtRequestInterceptor [request-token]
   Interceptor
   (-process-request [_ request]
-    (println "request" request)
-    (println "request-token" request-token)
     (-> request
       (update-in [:headers "Authorization"]
                  (constantly (str "Token " request-token)))))

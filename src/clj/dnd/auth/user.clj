@@ -61,6 +61,9 @@
   [id password]
   (let [user (c/get-at! db [:users id])]
     (if (and user (password-matches? password (:password user)))
-      {:token (jwt/sign {:user (:id user)} jwt-secret)
-       :user user}
+      user
       (throw (ex-info "Invalid ID or password" {:id id})))))
+
+(defn sign-user-token
+  [user]
+  (jwt/sign {:user user} jwt-secret))

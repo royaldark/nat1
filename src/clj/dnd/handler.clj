@@ -8,7 +8,7 @@
             [dnd.api :as api]
             [dnd.states.jwt :refer [jwt-backend]]
             [dnd.routes.roll :as roll]
-            [dnd.routes.signup :as signup]
+            [dnd.routes.users :as users]
             [ring.middleware.cookies :as cookies]
             [ring.middleware.cors :as cors]
             [ring.middleware.reload :as reload]
@@ -44,7 +44,7 @@
    (GET "/" [] (resp/resource-response "index.html" {:root "public"}))
 
    (capi/context "/roll" [] #'roll/routes)
-   (capi/context "/signup" [] #'signup/routes)
+   (capi/context "/users" [] #'users/routes)
 
    (resources "/")))
 
