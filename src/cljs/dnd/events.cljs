@@ -42,26 +42,47 @@
    #_(assoc db :api-result result)
    db))
 
+;; api/get-user
+
+(re-frame/reg-event-db
+ ::api/get-user-success
+ (fn [db [_ id user]]
+   (assoc-in db [:users id] user)))
+
+(re-frame/reg-event-db
+ ::api/get-user-failure
+ (fn [db [_ id err]]
+   (println "Failed to get user" id ">>>" err)))
+
+(api/reg-api-fx
+ ::api/get-user
+ (fn [{:keys [db] :as cofx} [_ id]]
+   {:http-xhrio {:method :get
+                 :uri (str "http://localhost:3000/users/"
+                           (js/encodeURIComponent id))
+                 :on-success [::api/get-user-success]
+                 :on-failure [::api/get-user-failure]}}))
+
 ;; api/sign-up
 
 (re-frame/reg-event-fx
-  :auth/set-token
-  [(re-frame/inject-cofx :store)]
-  (fn [{:keys [store] :as cofx} [_ token]]
-    {:store (assoc store :auth-token token)}))
+ :auth/set-token
+ [(re-frame/inject-cofx :store)]
+ (fn [{:keys [store] :as cofx} [_ token]]
+   {:store (assoc store :auth-token token)}))
 
 (api/reg-api-fx
  ::api/sign-up
  (fn [{:keys [db store] :as cofx}
       [_ username email password]]
    {#_#_:db (assoc db :signup-result)
-    :http-xhrio {:method          :post
-                 :uri             "http://localhost:3000/signup"
-                 :params          {:username username
-                                   :email    email
-                                   :password password}
-                 :on-success      [::api/sign-up-success]
-                 :on-failure      [::api/sign-up-failure]}}))
+    :http-xhrio {:method     :post
+                 :uri        "http://localhost:3000/users"
+                 :params     {:username username
+                              :email    email
+                              :password password}
+                 :on-success [::api/sign-up-success]
+                 :on-failure [::api/sign-up-failure]}}))
 
 (re-frame/reg-event-db
  ::api/sign-up-success

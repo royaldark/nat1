@@ -1,20 +1,18 @@
-(ns dnd.handler
+(ns dnd.ring.handler
   (:require [compojure.api.coercion.schema :as schema-coercion]
-            [buddy.auth.backends :as backends]
             [buddy.auth.middleware :as buddy]
             [compojure.api.sweet :as capi :refer [GET]]
             [compojure.core]
             [compojure.route :refer [resources]]
             [dnd.api :as api]
             [dnd.states.jwt :refer [jwt-backend]]
+            [dnd.ring.middleware :as middle]
             [dnd.routes.roll :as roll]
             [dnd.routes.users :as users]
-            [ring.middleware.cookies :as cookies]
             [ring.middleware.cors :as cors]
             [ring.middleware.reload :as reload]
             [ring.util.response :as resp]
-            [ring.util.http-response :as hresp]
-            [schema.core :as s]))
+            [ring.util.http-response :as hresp]))
 
 (defn render-http-error
   [^Exception e data request]
@@ -52,18 +50,13 @@
   (-> #'routes
       reload/wrap-reload))
 
-(defn wrap-debug-info
-  [handler]
-  (fn [request]
-    (println "request:" request)
-    (let [response (handler request)]
-      (println "response:" response)
-      response)))
+(def ^:private jwt-header "X-Jwt")
 
 (def handler
   (-> #'routes
-      wrap-debug-info
+      middle/wrap-debug-info
       (buddy/wrap-authentication jwt-backend)
+      (middle/wrap-jwt-header jwt-header)
       (cors/wrap-cors :access-control-allow-origin   [#".*"]
                       :access-control-allow-methods  [:get :put :post :delete]
-                      :access-control-expose-headers ["X-JWT"])))
+                      :access-control-expose-headers [jwt-header])))

@@ -2,11 +2,10 @@
   (:require [buddy.core.codecs :as codecs]
             [buddy.core.hash :as hash]
             [buddy.core.nonce :as nonce]
-            [buddy.sign.jwt :as jwt]
             [codax.core :as c]
             [clojure.string :as str]
             [dnd.states.db :refer [db]]
-            [dnd.states.jwt :refer [jwt-secret]])
+            [schema.core :as s])
   (:import (java.util UUID)))
 
 (def ^:private salt-bytes 8)
@@ -57,13 +56,17 @@
 (defn login-by-username!
   [username password])
 
+(def ^:private validate-id!
+  (s/validator UUID))
+
+(defn get-user-by-id
+  [id]
+  (validate-id! id)
+  (c/get-at! db [:users id]))
+
 (defn login-by-id!
   [id password]
-  (let [user (c/get-at! db [:users id])]
+  (let [user (get-user-by-id id)]
     (if (and user (password-matches? password (:password user)))
       user
       (throw (ex-info "Invalid ID or password" {:id id})))))
-
-(defn sign-user-token
-  [user]
-  (jwt/sign {:user user} jwt-secret))

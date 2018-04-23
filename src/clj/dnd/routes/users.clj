@@ -18,14 +18,21 @@
                       (:email user)))
      (let [user (auth-user/create! user)]
        (-> (resp/response user)
-           (resp/header "X-Jwt" (auth-user/sign-user-token user)))))
+           (assoc :jwt-data {:user-id (:id user)}))))
 
-   (POST "/token" []
+   (POST "/login" []
      :body-params [id       :- UUID
                    password :- s/Str]
      :responses {http-status/ok {:schema User}}
      (println (format "Login %s" id))
      (let [user (auth-user/login-by-id! id password)]
        (-> (resp/response user)
-           (resp/header "X-Jwt" (auth-user/sign-user-token user)))))))
+           (assoc :jwt-data {:user-id (:id user)}))))
+
+   (GET "/:id" []
+     :path-params [id :- UUID]
+     :responses {http-status/ok {:schema User}}
+     (println (format "Get user %s" id))
+     (resp/response
+      (auth-user/get-user-by-id id)))))
 
