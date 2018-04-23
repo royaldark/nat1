@@ -21,10 +21,6 @@
    (s/defschema HashedPassword
      (s/constrained s/Str auth-user/valid-hashed-password? ::valid-hashed-password)))
 
-(s/defschema Password
-  #?(:clj HashedPassword
-     :cljs s/Str))
-
 (s/defschema UUID
   (s/constrained s/Str #(= 25 (count %)) ::correct-uuid-length))
 
@@ -38,4 +34,4 @@
   {(s/optional-key :id)       UUID
    :username                  Username
    :email                     EmailAddress
-   (s/optional-key :password) Password})
+   (s/optional-key :password) s/Str})

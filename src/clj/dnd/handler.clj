@@ -9,6 +9,7 @@
             [dnd.states.jwt :refer [jwt-backend]]
             [dnd.routes.roll :as roll]
             [dnd.routes.signup :as signup]
+            [ring.middleware.cookies :as cookies]
             [ring.middleware.cors :as cors]
             [ring.middleware.reload :as reload]
             [ring.util.response :as resp]
@@ -63,5 +64,6 @@
   (-> #'routes
       wrap-debug-info
       (buddy/wrap-authentication jwt-backend)
-      (cors/wrap-cors :access-control-allow-origin  [#".*"]
-                      :access-control-allow-methods [:get :put :post :delete])))
+      (cors/wrap-cors :access-control-allow-origin   [#".*"]
+                      :access-control-allow-methods  [:get :put :post :delete]
+                      :access-control-expose-headers ["X-JWT"])))

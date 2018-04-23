@@ -16,9 +16,8 @@
 
 (defn hash-password
   [s]
-  (let [salt     (codecs/bytes->hex (nonce/random-bytes salt-bytes))
-        combined (str salt s)
-        hashed   (codecs/bytes->hex (hash/sha3-384 combined))]
+  (let [salt   (codecs/bytes->hex (nonce/random-bytes salt-bytes))
+        hashed (codecs/bytes->hex (hash/sha3-384 (str salt s)))]
     (str salt hashed)))
 
 (defn password-matches?
@@ -48,10 +47,12 @@
 
 (defn create!
   [user]
-  (let [id (uuid)]
-    (c/assoc-at! db [:users id] (-> user
-                                    (update :password hash-password)
-                                    (assoc :id id)))))
+  (let [id   (uuid)
+        user (-> user
+                 (update :password hash-password)
+                 (assoc :id id))]
+    (c/assoc-at! db [:users id] user)
+    user))
 
 (defn login-by-username!
   [username password])

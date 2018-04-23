@@ -1,24 +1,34 @@
 (defproject dnd "0.1.0-SNAPSHOT"
-  :dependencies [[org.clojure/clojure "1.8.0"]
+  :dependencies [;; Clojure(Script)
+                 [org.clojure/clojure "1.8.0"]
                  [org.clojure/clojurescript "1.9.908"]
+                 [org.clojure/core.async "0.2.391"]
+
+                 ;; Reagent/Re-Frame
                  [reagent "0.7.0"]
                  [re-frame "0.10.5"]
-                 [com.andrewmcveigh/cljs-time "0.5.0"]
-                 [org.clojure/core.async "0.2.391"]
-                 [re-com "2.1.0"]
                  [day8.re-frame/http-fx "0.1.6"]
+                 [akiroz.re-frame/storage "0.1.2"]
+
+                 ;; Other CLJS Deps
+                 [com.andrewmcveigh/cljs-time "0.5.0"]
+                 [re-com "2.1.0"]
                  [secretary "1.2.3"]
-                 [metosin/compojure-api "2.0.0-alpha19"]
-                 [yogthos/config "0.8"]
+                 [venantius/accountant "0.2.4"]
+
+                 ;; Ring/Compojure
                  [javax.servlet/servlet-api "2.5"]
                  [ring "1.6.3"]
                  [ring-cors "0.1.12"]
+                 [metosin/compojure-api "2.0.0-alpha19"]
+
+                 ;; Other CLJ Deps
+                 [buddy "2.0.0"]
                  [org.apache.commons/commons-math3 "3.6"]
-                 [venantius/accountant "0.2.4"]
+                 [commons-validator "1.6"]
                  [codax "1.2.0"]
                  [mount "0.1.12"]
-                 [commons-validator "1.6"]
-                 [buddy "2.0.0"]]
+                 [yogthos/config "0.8"]]
 
   :plugins [[lein-cljsbuild "1.1.5"]
             [lein-less "1.7.5"]

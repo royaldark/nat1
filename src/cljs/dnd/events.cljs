@@ -1,10 +1,16 @@
 (ns dnd.events
   (:require [ajax.core :as ajax]
+            [ajax.protocols :refer [Interceptor]]
+            [akiroz.re-frame.storage :as storage]
             [re-frame.core :as re-frame]
             [dnd.api :as api]
             [dnd.db :as db]
             [day8.re-frame.http-fx]
             [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]))
+
+(storage/reg-co-fx! :nat1 {:fx   :store
+                           :cofx :store})
+
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -48,6 +54,21 @@
 ;; api/sign-up
 
 (re-frame/reg-event-fx
+  :auth/set-token
+  (fn [{:keys [store] :as cofx} [_ token]]
+    {:store (assoc store :auth-token token)}))
+
+(defrecord JwtInterceptor []
+  Interceptor
+  (-process-request [_ request]
+    request)
+  (-process-response [_ response]
+    (when-let [token (.getResponseHeader response "X-Jwt")]
+      (println "Storing JWT token" token)
+      (re-frame/dispatch [:auth/set-token token]))
+    response))
+
+(re-frame/reg-event-fx
  ::api/sign-up
  (fn [{:keys [db] :as cofx}
       [_ username email password]]
@@ -59,6 +80,7 @@
                                    :password password}
                  :format          (ajax/json-request-format)
                  :response-format (ajax/json-response-format {:keywords? true})
+                 :interceptors    [(JwtInterceptor.)]
                  :on-success      [::api/sign-up-success]
                  :on-failure      [::api/sign-up-failure]}}))
 
@@ -71,5 +93,6 @@
  ::api/sign-up-failure
  (fn [db [_ result]]
    (println result)
+   (println (type result))
    #_(assoc db :api-result result)
    db))
