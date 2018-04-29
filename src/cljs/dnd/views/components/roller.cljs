@@ -57,8 +57,8 @@
                            :text-align "center"}]
                   [re-com/button
                    :label "Roll"
-                   :on-click #(re-frame/dispatch [::api/get-user id] #_[::api/roll-die id
-                                                                           (js/parseInt @number)
-                                                                           (js/parseInt @sides)
-                                                                           (js/parseInt @modifier)])
+                   :on-click #(re-frame/dispatch [::api/roll-die id
+                                                  (js/parseInt @number)
+                                                  (js/parseInt @sides)
+                                                  (js/parseInt @modifier)])
                    :style {:margin-left "1rem"}]]])))

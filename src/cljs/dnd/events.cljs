@@ -1,9 +1,10 @@
 (ns dnd.events
-  (:require [re-frame.core :as re-frame]
+  (:require [accountant.core :as accountant]
             [dnd.api :as api]
             [dnd.db :as db]
             [day8.re-frame.http-fx]
-            [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]))
+            [day8.re-frame.tracing :refer-macros [fn-traced defn-traced]]
+            [re-frame.core :as re-frame]))
 
 (re-frame/reg-event-db
  ::initialize-db
@@ -52,7 +53,8 @@
 (re-frame/reg-event-db
  ::api/get-user-failure
  (fn [db [_ id err]]
-   (println "Failed to get user" id ">>>" err)))
+   (println "Failed to get user" id ">>>" err)
+   db))
 
 (api/reg-api-fx
  ::api/get-user
@@ -60,8 +62,8 @@
    {:http-xhrio {:method :get
                  :uri (str "http://localhost:3000/users/"
                            (js/encodeURIComponent id))
-                 :on-success [::api/get-user-success]
-                 :on-failure [::api/get-user-failure]}}))
+                 :on-success [::api/get-user-success id]
+                 :on-failure [::api/get-user-failure id]}}))
 
 ;; api/sign-up
 
@@ -75,8 +77,7 @@
  ::api/sign-up
  (fn [{:keys [db store] :as cofx}
       [_ username email password]]
-   {#_#_:db (assoc db :signup-result)
-    :http-xhrio {:method     :post
+   {:http-xhrio {:method     :post
                  :uri        "http://localhost:3000/users"
                  :params     {:username username
                               :email    email
@@ -84,10 +85,12 @@
                  :on-success [::api/sign-up-success]
                  :on-failure [::api/sign-up-failure]}}))
 
-(re-frame/reg-event-db
- ::api/sign-up-success
- (fn [db [_ result]]
-   (assoc db ::api/sign-up-results result)))
+(re-frame/reg-event-fx
+  ::api/sign-up-success
+  (fn [cofx [_ user]]
+    (accountant/navigate! "/")
+    (re-frame/dispatch [:auth/set-active-user user])
+    {}))
 
 (re-frame/reg-event-db
  ::api/sign-up-failure

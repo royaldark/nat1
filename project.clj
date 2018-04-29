@@ -44,7 +44,7 @@
                                     "test/js"]
 
   :figwheel {:css-dirs ["resources/public/css"]
-             :ring-handler dnd.handler/dev-handler}
+             :ring-handler dnd.ring.handler/dev-handler}
 
   :less {:source-paths ["less"]
          :target-path  "resources/public/css"}

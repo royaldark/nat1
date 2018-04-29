@@ -21,6 +21,11 @@
   (fn [{:keys [store] :as cofx} [_ token]]
     {:store (assoc store :auth-token token)}))
 
+(re-frame/reg-event-db
+  :auth/set-active-user
+  (fn [db [_ user]]
+    (assoc db ::active-user user)))
+
 ;;;
 ;;; Authentication Token HTTP Interceptors
 ;;;
@@ -28,7 +33,8 @@
 (defrecord JwtRequestInterceptor [request-token]
   Interceptor
   (-process-request [_ request]
-    (-> request
+    (cond-> request
+      request-token
       (update-in [:headers "Authorization"]
                  (constantly (str "Token " request-token)))))
   (-process-response [_ response] response))

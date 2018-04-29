@@ -8,6 +8,11 @@
    (:version db)))
 
 (re-frame/reg-sub
+  ::active-user
+  (fn [db]
+    (::api/active-user db)))
+
+(re-frame/reg-sub
   ::die-roll-results
   (fn [db]
     (::api/roll-die-results db)))

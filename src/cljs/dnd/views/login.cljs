@@ -1,10 +1,12 @@
 (ns dnd.views.login
   (:require [reagent.core :as reagent]
             [re-com.core :as re-com]
+            [re-frame.core :as re-frame]
+            [dnd.api :as api]
             [dnd.views.header :as v-header]))
 
 (defn login-form []
-  (let [username (reagent/atom "joe")
+  (let [username (reagent/atom "")
         password (reagent/atom "")]
     (fn []
       [re-com/v-box
@@ -19,7 +21,7 @@
                    :on-change #(reset! password %)]
                   [re-com/button
                    :label "Login"
-                   :on-click #(do nil)]]])))
+                   :on-click #(re-frame/dispatch [::api/log-in @username @password])]]])))
 
 (defn login-panel []
   [re-com/v-box

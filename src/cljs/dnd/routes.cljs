@@ -25,6 +25,9 @@
   (defroute "/login" []
     (re-frame/dispatch [::events/set-active-panel :login-panel]))
 
+  (defroute "/logout" []
+    (re-frame/dispatch [::events/set-active-panel :logout-panel]))
+
   (defroute "/signup" []
     (re-frame/dispatch [::events/set-active-panel :signup-panel]))
 
