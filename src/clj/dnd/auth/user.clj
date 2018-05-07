@@ -4,7 +4,7 @@
             [buddy.core.nonce :as nonce]
             [codax.core :as c]
             [clojure.string :as str]
-            [dnd.domain.user :refer [Username EmailAddress]]
+            [dnd.domain.user :refer [UserId Username EmailAddress]]
             [dnd.states.db :refer [db]]
             [schema.core :as s])
   (:import (java.util UUID)))
@@ -47,7 +47,7 @@
 
 (defn create!
   [user]
-  (let [id   (uuid)
+  (let [id   (str "user:" (uuid))
         user (-> user
                  (update :password hash-password)
                  (assoc :id id))]
@@ -58,7 +58,7 @@
   [username password])
 
 (def ^:private validate-id!
-  (s/validator UUID))
+  (s/validator UserId))
 (def ^:private validate-username!
   (s/validator Username))
 (def ^:private validate-email!

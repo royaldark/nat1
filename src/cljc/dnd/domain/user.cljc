@@ -1,5 +1,7 @@
 (ns dnd.domain.user
-  (:require [schema.core :as s])
+  (:require [clojure.string :as str]
+            [dnd.domain.common :refer [UUID]]
+            [schema.core :as s])
   (:import #?(:clj (org.apache.commons.validator.routines EmailValidator))))
 
 #?(:cljs
@@ -16,8 +18,14 @@
   #?(:clj  (-> (EmailValidator/getInstance) (.isValid s))
      :cljs (re-matches email-regex s)))
 
-(s/defschema UUID
-  (s/constrained s/Str #(= 25 (count %)) ::correct-uuid-length))
+(defn valid-user-id?
+  [id]
+  (let [[type uuid] (str/split id #":")]
+    (and (= "user" type)
+         (nil? (s/check UUID uuid)))))
+
+(s/defschema UserId
+  (s/constrained s/Str valid-user-id? ::valid-user-id))
 
 (s/defschema Username
   (s/constrained s/Str valid-username? ::valid-username))
@@ -26,7 +34,7 @@
   (s/constrained s/Str valid-email? ::valid-email))
 
 (s/defschema User
-  {(s/optional-key :id)       UUID
+  {(s/optional-key :id)       UserId
    :username                  Username
    :email                     EmailAddress
    (s/optional-key :password) s/Str})

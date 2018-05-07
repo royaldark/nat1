@@ -2,7 +2,7 @@
   (:require [buddy.sign.jwt :as jwt]
             [compojure.api.sweet :as capi :refer [GET POST PUT DELETE]]
             [dnd.auth.user :as auth-user]
-            [dnd.domain.user :refer [EmailAddress User Username UUID]]
+            [dnd.domain.user :refer [EmailAddress User UserId Username]]
             [dnd.states.jwt :refer [jwt-secret]]
             [ring.util.http-status :as http-status]
             [ring.util.response :as resp]
@@ -10,7 +10,7 @@
 
 (s/defschema LoginCredential
   (s/conditional
-   :id       {:id       UUID
+   :id       {:id       UserId
               :password s/Str}
    :username {:username Username
               :password s/Str}
@@ -44,7 +44,7 @@
            (assoc :jwt-data {:user-id (:id user)}))))
 
    (GET "/:id" []
-     :path-params [id :- UUID]
+     :path-params [id :- UserId]
      :responses {http-status/ok {:schema User}}
      (println (format "Get user %s" id))
      (resp/response
