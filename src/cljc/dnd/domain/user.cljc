@@ -1,6 +1,5 @@
 (ns dnd.domain.user
-  (:require [schema.core :as s]
-            #?(:clj [dnd.auth.user :as auth-user]))
+  (:require [schema.core :as s])
   (:import #?(:clj (org.apache.commons.validator.routines EmailValidator))))
 
 #?(:cljs
@@ -16,10 +15,6 @@
   [s]
   #?(:clj  (-> (EmailValidator/getInstance) (.isValid s))
      :cljs (re-matches email-regex s)))
-
-#?(:clj
-   (s/defschema HashedPassword
-     (s/constrained s/Str auth-user/valid-hashed-password? ::valid-hashed-password)))
 
 (s/defschema UUID
   (s/constrained s/Str #(= 25 (count %)) ::correct-uuid-length))

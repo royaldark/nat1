@@ -3,6 +3,7 @@
             [re-com.core :as re-com]
             [re-frame.core :as re-frame]
             [dnd.api :as api]
+            [dnd.util :as util]
             [dnd.views.header :as v-header]))
 
 (defn login-form []
@@ -10,15 +11,17 @@
         password (reagent/atom "")]
     (fn []
       [re-com/v-box
-       :children ["Username:"
-                  [re-com/input-text
+       :children [[re-com/input-text
+                   :placeholder "Username"
                    :model username
                    :on-change #(reset! username %)]
-                  "Password:"
+                  (util/nbsp)
                   [re-com/input-text
                    :input-type :password
+                   :placeholder "Password"
                    :model password
                    :on-change #(reset! password %)]
+                  (util/nbsp)
                   [re-com/button
                    :label "Login"
                    :on-click #(re-frame/dispatch [::api/log-in @username @password])]]])))

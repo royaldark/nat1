@@ -21,6 +21,13 @@
   (fn [{:keys [store] :as cofx} [_ token]]
     {:store (assoc store :auth-token token)}))
 
+(re-frame/reg-event-fx
+  :auth/clear-token
+ [(re-frame/inject-cofx :store)]
+ (fn [{:keys [db store] :as cofx} _]
+   {:store (dissoc store :auth-token)
+    :db    (dissoc db ::active-user)}))
+
 (re-frame/reg-event-db
   :auth/set-active-user
   (fn [db [_ user]]
@@ -52,6 +59,9 @@
 ;;; API Endpoint Registration Helpers
 ;;;
 
+(def base-url
+  "http://localhost:3000")
+
 (defn reg-api-fx
   ([id handler]
     (reg-api-fx id nil handler))
@@ -65,5 +75,6 @@
             (update :http-xhrio merge {:format          (ajax/json-request-format)
                                        :response-format (ajax/json-response-format {:keywords? true})
                                        :interceptors    [(JwtRequestInterceptor. (:auth-token store))
-                                                         (JwtResponseInterceptor.)]})))))))
+                                                         (JwtResponseInterceptor.)]})
+            (update-in [:http-xhrio :uri] #(str base-url "/" %))))))))
 

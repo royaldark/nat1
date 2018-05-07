@@ -24,7 +24,7 @@
       [_ id number sides modifier]]
    {:db         (assoc-in db [::api/roll-die-results id] 0)
     :http-xhrio {:method     :post
-                 :uri        "http://localhost:3000/roll"
+                 :uri        "roll"
                  :params     {:number   number
                               :sides    sides
                               :modifier modifier}
@@ -60,25 +60,21 @@
  ::api/get-user
  (fn [{:keys [db] :as cofx} [_ id]]
    {:http-xhrio {:method :get
-                 :uri (str "http://localhost:3000/users/"
-                           (js/encodeURIComponent id))
+                 :uri (str "users/" (js/encodeURIComponent id))
                  :on-success [::api/get-user-success id]
                  :on-failure [::api/get-user-failure id]}}))
 
 ;; api/sign-up
 
-(re-frame/reg-event-fx
- :auth/set-token
- [(re-frame/inject-cofx :store)]
- (fn [{:keys [store] :as cofx} [_ token]]
-   {:store (assoc store :auth-token token)}))
+
+  
 
 (api/reg-api-fx
  ::api/sign-up
  (fn [{:keys [db store] :as cofx}
       [_ username email password]]
    {:http-xhrio {:method     :post
-                 :uri        "http://localhost:3000/users"
+                 :uri        "users"
                  :params     {:username username
                               :email    email
                               :password password}
@@ -94,6 +90,34 @@
 
 (re-frame/reg-event-db
  ::api/sign-up-failure
+ (fn [db [_ result]]
+   (println result)
+   (println (type result))
+   #_(assoc db :api-result result)
+   db))
+
+;; api/log-in
+
+(api/reg-api-fx
+ ::api/log-in
+ (fn [{:keys [db store] :as cofx}
+      [_ username password]]
+   {:http-xhrio {:method     :post
+                 :uri        "users/login"
+                 :params     {:username username
+                              :password password}
+                 :on-success [::api/log-in-success]
+                 :on-failure [::api/log-in-failure]}}))
+
+(re-frame/reg-event-fx
+  ::api/log-in-success
+  (fn [cofx [_ user]]
+    (accountant/navigate! "/")
+    (re-frame/dispatch [:auth/set-active-user user])
+    {}))
+
+(re-frame/reg-event-db
+ ::api/log-in-failure
  (fn [db [_ result]]
    (println result)
    (println (type result))

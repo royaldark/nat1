@@ -27,3 +27,8 @@
  ::active-panel
  (fn [db _]
    (:active-panel db)))
+
+(re-frame/reg-sub
+ ::campaigns
+ (fn [db _]
+   (:campaigns db)))

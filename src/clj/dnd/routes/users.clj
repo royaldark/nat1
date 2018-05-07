@@ -2,11 +2,20 @@
   (:require [buddy.sign.jwt :as jwt]
             [compojure.api.sweet :as capi :refer [GET POST PUT DELETE]]
             [dnd.auth.user :as auth-user]
-            [dnd.domain.user :refer [User UUID]]
+            [dnd.domain.user :refer [EmailAddress User Username UUID]]
             [dnd.states.jwt :refer [jwt-secret]]
             [ring.util.http-status :as http-status]
             [ring.util.response :as resp]
             [schema.core :as s]))
+
+(s/defschema LoginCredential
+  (s/conditional
+   :id       {:id       UUID
+              :password s/Str}
+   :username {:username Username
+              :password s/Str}
+   :email    {:email EmailAddress
+              :password s/Str}))
 
 (def routes
   (capi/routes
@@ -21,11 +30,16 @@
            (assoc :jwt-data {:user-id (:id user)}))))
 
    (POST "/login" []
-     :body-params [id       :- UUID
-                   password :- s/Str]
+     :body [creds LoginCredential]
      :responses {http-status/ok {:schema User}}
-     (println (format "Login %s" id))
-     (let [user (auth-user/login-by-id! id password)]
+     (println (format "Login %s" creds))
+     (let [user (condp #(contains? %2 %1) creds
+                  :id       (auth-user/login-by-id! (:id creds)
+                                                    (:password creds))
+                  :username (auth-user/login-by-username! (:username creds)
+                                                          (:password creds))
+                  :email    (auth-user/login-by-email! (:email creds)
+                                                       (:password creds)))]
        (-> (resp/response user)
            (assoc :jwt-data {:user-id (:id user)}))))
 

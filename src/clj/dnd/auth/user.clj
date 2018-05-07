@@ -4,6 +4,7 @@
             [buddy.core.nonce :as nonce]
             [codax.core :as c]
             [clojure.string :as str]
+            [dnd.domain.user :refer [Username EmailAddress]]
             [dnd.states.db :refer [db]]
             [schema.core :as s])
   (:import (java.util UUID)))
@@ -58,15 +59,55 @@
 
 (def ^:private validate-id!
   (s/validator UUID))
+(def ^:private validate-username!
+  (s/validator Username))
+(def ^:private validate-email!
+  (s/validator EmailAddress))
 
 (defn get-user-by-id
   [id]
   (validate-id! id)
   (c/get-at! db [:users id]))
 
-(defn login-by-id!
-  [id password]
-  (let [user (get-user-by-id id)]
+(defn get-user-by-username
+  [username]
+  (validate-username! username)
+  (let [users (c/seek-at! db [:users])]
+    (->> users
+         (filter (fn [[_ user]]
+                   (= username (:username user))))
+         first
+         second)))
+
+(defn get-user-by-email
+  [email]
+  (let [users (c/seek-at! db [:users])]
+    (->> users
+         (filter (fn [[_ user]]
+                   (= email (:email user))))
+         first
+         second)))
+
+(defn ^:private login!
+  [fetch-fn identifier password]
+  (let [user (fetch-fn identifier)]
+    (println "got user:" user)
     (if (and user (password-matches? password (:password user)))
       user
-      (throw (ex-info "Invalid ID or password" {:id id})))))
+      (throw (ex-info "Invalid credentials" {:identifier identifier
+                                             :password   password})))))
+
+(defn login-by-id!
+  [id password]
+  (println "Logging in:" id)
+  (login! get-user-by-id id password))
+
+(defn login-by-username!
+  [username password]
+  (println "Logging in:" username password)
+  (login! get-user-by-username username password))
+
+(defn login-by-email!
+  [email password]
+  (println "Logging in:" email)
+  (login! get-user-by-email email password))

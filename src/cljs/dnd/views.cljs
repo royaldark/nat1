@@ -7,6 +7,7 @@
             [dnd.subs :as subs]
             [dnd.views.home :as v-home]
             [dnd.views.login :as v-login]
+            [dnd.views.logout :as v-logout]
             [dnd.views.signup :as v-signup]))
 
 ;; main
@@ -15,6 +16,7 @@
   (case panel-name
     :home-panel   [v-home/home-panel]
     :login-panel  [v-login/login-panel]
+    :logout-panel [v-logout/logout-panel]
     :signup-panel [v-signup/signup-panel]
     [:div]))
 
